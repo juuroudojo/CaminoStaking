@@ -96,6 +96,10 @@ contract SimpleAirdropHandler is
         return info.totalAmount;
     }
 
+    function setStakingHandler(address _stakingHandler) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakingHandler = _stakingHandler;
+    }
+
     function changeUpgradeStatus(
         bool _status
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -115,9 +119,5 @@ contract SimpleAirdropHandler is
 
     function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
-    }
-
-    function setStakingHandler(address _stakingHandler) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        stakingHandler = _stakingHandler;
     }
 }
