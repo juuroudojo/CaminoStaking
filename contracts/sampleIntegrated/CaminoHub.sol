@@ -12,8 +12,8 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
-import {IStakingHandler} from "./interfaces/IStakingHandler.sol";
-import {IAirDropHandler} from "./interfaces/IAirDropHandler.sol";
+import {IStakingHandler} from "./../interfaces/IStakingHandler.sol";
+import {IAirDropHandler} from "./../interfaces/IAirDropHandler.sol";
 
 import "hardhat/console.sol";
 
@@ -158,7 +158,7 @@ contract CaminoHub is
     }
 
     /**
-    * @dev Override the function above which allows to enforce whitelisting of addresses for aidrops
+    * @dev Override for the function above which allows to enforce whitelisting of addresses for aidrops
     * @param token address of the token to be airdropped
     * @param amount amount of tokens to be airdropped
     * @param airdropPeriod period of time the airdrop is active for
