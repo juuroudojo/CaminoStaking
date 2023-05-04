@@ -23,8 +23,6 @@
 //        grantRole(DEFAULT_ADMIN_ROLE, multisig);
 //     }
 
-
-//     // Function to airdrop multiple tokens to a list of addresses
 //     function multiTokenAirdrop(
 //         address[] memory tokenAddresses,
 //         uint256[] memory tokenAmounts,

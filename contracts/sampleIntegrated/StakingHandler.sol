@@ -14,7 +14,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 import "hardhat/console.sol";
 
-contract SimpleStakingHandler is 
+contract StakingHandler is 
     Initializable,
     PausableUpgradeable,
     AccessControlUpgradeable,

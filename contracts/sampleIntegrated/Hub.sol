@@ -17,7 +17,7 @@ import {IAirDropHandler} from "./../interfaces/IAirDropHandler.sol";
 
 import "hardhat/console.sol";
 
-contract CaminoHub is 
+contract Hub is 
     Initializable,
     PausableUpgradeable,
     AccessControlUpgradeable,

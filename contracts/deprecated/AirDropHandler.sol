@@ -77,7 +77,6 @@
 //         emit AirdropClaimed(msg.sender, token, amount);
 //     }
 
-//     // Function to airdrop multiple tokens to a list of addresses
 //     function multiTokenAirdrop(
 //         address[] memory tokenAddresses,
 //         uint256[] memory tokenAmounts,

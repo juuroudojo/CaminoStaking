@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 
 import "hardhat/console.sol";
 
-contract SimpleAirdropHandler is 
+contract AirdropHandler is 
     Initializable,
     PausableUpgradeable,
     AccessControlUpgradeable,
