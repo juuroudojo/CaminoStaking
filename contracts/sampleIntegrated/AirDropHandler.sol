@@ -24,9 +24,10 @@ contract AirdropHandler is
     using EnumerableMapUpgradeable for EnumerableMapUpgradeable.AddressToUintMap;
 
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
+    bytes32 public constant HUB = keccak256("HUB");
 
     //flag for upgrades availability
-    bool public upgradeStatus;
+    bool public upgradeStatus; 
 
     address public stakingHandler;
 
@@ -62,13 +63,15 @@ contract AirdropHandler is
     * @param merkleRoot merkle root
     * @param moneyback moneyback flag
     */
-    function launchAirdrop(address token, uint256 amount, uint256 airdropPeriod, bytes32 merkleRoot, bool moneyback) external {
+    function launchAirdrop(address token, uint256 amount, uint256 _totalAmount, uint256 airdropPeriod, bytes memory merkleRoot, bool moneyback) external onlyRole(HUB){
         AirdropInfo storage info = airdropInfo[token];
         info.amount = amount;
+        
+        info.totalAmount = _totalAmount;
         info.startTime = block.timestamp;
         info.period = airdropPeriod;
         info.collateralToken = token;
-        info.merkleRoot = merkleRoot;
+        // info.merkleRoot = merkleRoot;
         info.moneyback = moneyback;
     }
 
@@ -79,15 +82,16 @@ contract AirdropHandler is
     */
     function claimAirdrop(address user, address token) external returns(uint256) {
         AirdropInfo storage info = airdropInfo[token];
-        require(info.startTime + info.period > block.timestamp, "Airdrop is expired");
+        require(info.startTime + info.period > block.timestamp, "Airdrop has expired");
         // bytes memory zeroRoot = abi.encodePacked(keccak256("0"));
         // if (info.merkleRoot != zeroRoot) {
         //     // not implemented yet
         //     return 0;
         // } else {
-            uint256 amount = info.amount;
-            info.totalAmount -= amount;
-            return amount;
+        uint256 amount = info.amount;
+        // console.log("amount", amount);
+        info.totalAmount -= amount;
+        return amount;
         // }
     }
 

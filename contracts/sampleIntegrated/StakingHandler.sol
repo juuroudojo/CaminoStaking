@@ -26,6 +26,7 @@ contract StakingHandler is
 
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant HUB = keccak256("HUB");
+    uint256 public constant ADTRESHOLD = 1000 * 10 ** 18;
 
     //flag for upgrades availability
     bool public upgradeStatus;
@@ -89,7 +90,7 @@ contract StakingHandler is
     /**
     * @dev Initialize the staking campaign for a token
     * @param token address of the token to stake
-    * @param interest interest rate for the token with 2 decimals (e.g. 10% = 100000)
+    * @param interest interest rate for the token with 2 decimals (e.g. 10% = 1000)
     * @param timelock timelock period for the token in seconds (e.g. 1 month = 2592000)
     * @param staketime time to stake the token in seconds (e.g. 1 month = 2592000)
     * @param stakemax maximum amount of tokens to stake
@@ -101,9 +102,9 @@ contract StakingHandler is
         uint256 staketime,
         uint256 stakemax
         ) external {
-        require(staketime >= 2592000 && timelock <= 31536000, "stakeTime not in 1m - 1y range");
+        require(staketime >= 2592000 && staketime <= 31536000, "stakeTime not in 1m - 1y range");
         require(timelock <= staketime, "timelock more than stakeTime");
-        require(interest >= 50000 && interest <= 3000000, "interest not in 0.05 - 3% range");
+        require(interest >= 5 && interest <= 300, "interest not in 0.05 - 3% range");
 
         StakeTokenInfo storage tInfo = tokenToInfo[token];
         tInfo.interest = interest;
@@ -114,9 +115,12 @@ contract StakingHandler is
         tInfo.active = true;
     }
 
+    /**
+    * @dev Called by the hub to add a token to the staking campaign
+    */
     function stake(address user, address token, uint256 amount) external onlyRole(HUB) {
         StakeTokenInfo storage tInfo = tokenToInfo[token];
-        StakeInfo storage st = userToInfo[msg.sender][token];
+        StakeInfo storage st = userToInfo[user][token];
 
         require(amount > tInfo.minAmount, "< minAmount");
         require(block.timestamp < tInfo.startTime + tInfo.stakeTime, "Staking period ended");
@@ -125,6 +129,10 @@ contract StakingHandler is
         st.amount += amount;
         st.timeStaked = block.timestamp;
         st.timeLock = tInfo.lockTime;
+
+        if (amount >= ADTRESHOLD) {
+            st.airDropEligible = true;
+        }
     }
 
     function withdraw(address user, address token) public onlyRole(HUB) returns(uint256) {
@@ -143,12 +151,12 @@ contract StakingHandler is
         return amount;
     }
 
-    function updateReward(address user, address token) internal returns(uint256) {
-        StakeInfo storage stake = userToInfo[user][token];
+    function updateReward(address user, address token) internal view returns(uint256) {
+        StakeInfo storage st = userToInfo[user][token];
         StakeTokenInfo memory tInfo = tokenToInfo[token];
-        require(block.timestamp > stake.timeStaked + stake.timeLock, "Stake is locked");
-        uint256 daysStaked = (block.timestamp - stake.timeStaked) / 86400;
-        uint256 reward = stake.amount * tInfo.interest / daysStaked;
+        require(block.timestamp > st.timeStaked + st.timeLock, "Stake is locked");
+        uint256 daysStaked = (block.timestamp - st.timeStaked) / 86400;
+        uint256 reward = st.amount * tInfo.interest / daysStaked;
         return reward;
     }
 

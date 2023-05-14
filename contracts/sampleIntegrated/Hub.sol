@@ -104,8 +104,10 @@ contract Hub is
     */
     function unstake (address token) external  {
         uint256 amount = IStakingHandler(stakingHandler).withdraw(msg.sender, token);
-        uint256 decDif = 18 - IERC20Metadata(token).decimals() ;
+        console.log(amount);
+        uint256 decDif = 18 - IERC20Metadata(token).decimals();
         amount = amount / 10 ** decDif;
+        console.log(amount);
         IERC20Upgradeable(token).safeTransfer(msg.sender, amount);
 
         emit Unstaked(msg.sender, token, amount);
@@ -120,12 +122,13 @@ contract Hub is
         // Calculating the max amount to cover the interest, after the staking is over the user, who initiated the staking can claim the unused tokens
         uint256 daysToStake = stakeTime / 86400;
         uint256 interest = dailyInterest * daysToStake;
-        uint256 maxCover = maxAmount * interest / 100000000;
+        // uint256 bb = daysToStake * dailyInterest;
+        uint256 maxCover = maxAmount * interest / 100;
 
         IERC20(token).transferFrom(msg.sender, address(this), maxCover);
         // All the info in handlers is stored in 18 decimals, thus needs to be converted
         uint256 decDiff = 18 - IERC20Metadata(token).decimals();
-        IStakingHandler(stakingHandler).launchStaking(token, dailyInterest, maxAmount * 10 ** decDiff, timelock, stakeTime);
+        IStakingHandler(stakingHandler).launchStaking(token, dailyInterest, timelock, stakeTime, maxCover * 10 ** decDiff);
 
         emit StakingIntialized(token, maxAmount, dailyInterest* 31536000);
     }
@@ -143,7 +146,7 @@ contract Hub is
 
         // Checks if the amount covers the max possible airdrop, if moneyBack is on - rest can 
         // be claimed by the initiator after the airdrop is completed
-        require(IStakingHandler(stakingHandler).coverAirdrop(token) <= amount, "amount doesn't cover max possible");
+        // require(IStakingHandler(stakingHandler).coverAirdrop(token) <= amount, "amount doesn't cover max possible");
 
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         address colToken = stakedTokens[stakedTokens.length - 1];
@@ -152,7 +155,7 @@ contract Hub is
         stakedTokens.pop();
         uint256 decDiff = 18 - IERC20Metadata(token).decimals();
         bytes memory zeroRoot = abi.encodePacked(keccak256("0x0"));
-        IAirDropHandler(airdropHandler).launchAirdrop(token, amount * 10 ** decDiff, airdropPeriod, zeroRoot, moneyBack);
+        IAirDropHandler(airdropHandler).launchAirdrop(token, amount * 10 ** decDiff, amount * 10 ** decDiff * 20, airdropPeriod, zeroRoot, moneyBack);
 
         emit AirdropInitialized(token, amount);
     }
@@ -174,7 +177,7 @@ contract Hub is
         ) public whenNotPaused {
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         uint256 decDiff = 18 - IERC20Metadata(token).decimals();
-        IAirDropHandler(airdropHandler).launchAirdrop(token, amount * 10 ** decDiff, airdropPeriod, merkleRoot, moneyBack);
+        IAirDropHandler(airdropHandler).launchAirdrop(token, amount * 10 ** decDiff, amount * 10 ** decDiff * 20, airdropPeriod, merkleRoot, moneyBack);
         
         emit AirdropInitialized(token, amount);
     }
@@ -186,7 +189,7 @@ contract Hub is
     function claimAirdrop(address token) public whenNotPaused {
         require(IStakingHandler(stakingHandler).isAirDropEligible(msg.sender, tokenToColToken[token]), "User is not eligible for airdrop");
 
-        uint256 amount = IAirDropHandler(airdropHandler).claimAirDrop(msg.sender, token);
+        uint256 amount = IAirDropHandler(airdropHandler).claimAirdrop(msg.sender, token);
         // All the info in handlers is stored in 18 decimals, thus needs to be converted
         uint256 decDiff = 18 - IERC20Metadata(token).decimals();
         IERC20Upgradeable(token).safeTransfer(msg.sender, amount / 10 ** decDiff);
