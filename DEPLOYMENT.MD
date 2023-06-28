@@ -19,6 +19,8 @@ The approach chosen for the Tokenomics repo comes down to a set of unit contract
 
 ## Smart Contracts
 
+<img src=https://github.com/juuroudojo/images/blob/main/leela.png/>
+
 - **`LiquidityPool.sol`** - Basic implementation of a Liquidity Pool solution omitting complex mathematical algorithms providing AMM mechanisms. User is introduced to the concept of a liquidity pool, liquidity pool tokens, exchange mechanisms, tokenomics basics, etc.
 
 - **`Staking.sol`** - Basic implementation of a Staking platform. Allows anyone to participate in a staking 
