@@ -6,6 +6,8 @@
 
 # Tokenomics on Camino Network
 
+## [DEPLOYMENT GUIDE](https://github.com/juuroudojo/CaminoTokenomics/blob/master/DEPLOYMENT.MD)
+
 The repository displays basic implementations of different contracts covering different parts of liquidity dynamics. Below you can find a detailed description of each contract, as well as a guide on what each of them is and how to work with it.
 
 ## Table of Contents
